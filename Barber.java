@@ -31,7 +31,7 @@ public class Barber implements Runnable {
 	 * created for this instance.
 	 */
 	@Override
-	public synchronized void run(){
+	public void run(){
 		// Incomplete
 		gui.println("Running " + threadName);
 		running = true;
@@ -47,7 +47,7 @@ public class Barber implements Runnable {
 					thread.sleep(Globals.barberSleep);
 					gui.barberIsAwake(pos);
 				}else{
-					wait();
+					//wait();
 				}
 			}
 		} catch (InterruptedException e) {
