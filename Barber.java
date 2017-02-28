@@ -31,20 +31,24 @@ public class Barber implements Runnable {
 	 * created for this instance.
 	 */
 	@Override
-	public void run(){
+	public synchronized void run(){
 		// Incomplete
 		gui.println("Running " + threadName);
 		running = true;
 		try {
 			thread.sleep(5000);
 			while(true){
-				gui.fillBarberChair(pos, queue.next());
-				gui.println(threadName + " is cutting");
-				thread.sleep(Globals.barberWork);
-				gui.emptyBarberChair(pos);
-				gui.barberIsSleeping(pos);
-				thread.sleep(Globals.barberSleep);
-				gui.barberIsAwake(pos);
+				if (!queue.isEmpty()){
+					gui.fillBarberChair(pos, queue.next());
+					gui.println(threadName + " is cutting");
+					thread.sleep(Globals.barberWork);
+					gui.emptyBarberChair(pos);
+					gui.barberIsSleeping(pos);
+					thread.sleep(Globals.barberSleep);
+					gui.barberIsAwake(pos);
+				}else{
+					wait();
+				}
 			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();

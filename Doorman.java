@@ -25,20 +25,17 @@ public class Doorman implements Runnable {
 	 * created for this instance.
 	 */
 	@Override
-	public void run(){
+	public synchronized void run(){
 		// Incomplete
 		gui.println("Running " + threadName);
-		int pos = -1;
-		while(queue.getQueueLength()< queue.getQueueMaxLength()){
-			pos += 1;
-			queue.add(new Customer());
-			gui.println("Doorman let in customer");
-			gui.fillLoungeChair(pos, queue.peek());
-			try {
+		try{
+			while(true){
+				queue.add(new Customer());
+				notifyAll();
 				thread.sleep(Globals.doormanSleep);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
 			}
+		}catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 	}
 
