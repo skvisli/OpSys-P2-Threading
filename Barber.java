@@ -10,7 +10,6 @@ public class Barber implements Runnable {
 	private int pos;
 	private String threadName;
 	private Thread thread;
-	private boolean running;
 	/**
 	 * Creates a new barber. Make sure to save these variables in the class.
 	 * @param queue		The customer queue.
@@ -23,7 +22,6 @@ public class Barber implements Runnable {
 		this.gui = gui;
 		this.pos = pos;
 		threadName = "Barber " + pos;
-		running = false;
 	}
 
 	/**
@@ -34,7 +32,6 @@ public class Barber implements Runnable {
 	public void run(){
 		// Incomplete
 		gui.println("Running " + threadName);
-		running = true;
 			while(true){
 				Customer nextCust = queue.next(threadName);
 				System.out.println(threadName + " is running");

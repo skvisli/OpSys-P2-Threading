@@ -1,6 +1,4 @@
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.ArrayList;
 
 /**
  * This class implements a queue of customers as a circular buffer.
@@ -8,8 +6,10 @@ import java.util.Queue;
 public class CustomerQueue {
 	private int queueLength;
 	private Gui gui;
-	public LinkedList<Customer> queue;
-	public LinkedList<Customer> loungeSeating;
+	private ArrayList<Customer> circBuff;
+	int readPos = 0;
+	int writePos = 0;
+	int counter = 0;
 
 	/**
 	 * Creates a new customer queue. Make sure to save these variables in the class.
@@ -20,45 +20,60 @@ public class CustomerQueue {
 		// Incomplete
 		this.queueLength = queueLength;
 		this.gui = gui;
-		queue = new LinkedList<>();
-		loungeSeating = new LinkedList<>();
-		for (int i = 0; i < 18; i++){
-			loungeSeating.add(null);
+		circBuff = new ArrayList<>();
+		for (int i = 0; i < queueLength; i ++){
+			circBuff.add(null);
 		}
 	}
 
 	public synchronized void add(Customer customer) {
-		queue.add(customer);
-		for (int i = 0; i < loungeSeating.size(); i++){
-			if(loungeSeating.get(i) == null){
-				loungeSeating.set(i, customer);
-				gui.fillLoungeChair(i, queue.peekLast());
-				gui.println("Doorman let in customer");
-				notifyAll();
-				break;
+    	//If lounge is not full
+		if (counter < queueLength){
+			circBuff.set(writePos, customer);
+			gui.fillLoungeChair(writePos, customer);
+			gui.println("Doorman let in customer");
+			counter += 1;
+			writePos = calcPos(writePos);
+			notifyAll();
+		}else{
+			try{
+				wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 		}
 	}
 
 	public synchronized Customer next(String barberName) {
-		// Inclomplete
-		if (queue.isEmpty()){
+		if (circBuff.get(readPos) != null){
+			Customer nextCust = circBuff.get(readPos);
+			gui.emptyLoungeChair(readPos);
+			circBuff.set(readPos, null);
+			counter -= 1;
+			readPos = calcPos(readPos);
+			notifyAll();
+			return nextCust;
+		}else {
 			try{
 				System.out.println(barberName + " thread is waiting");
 				wait();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-		}else{
-			Customer nextCust = queue.poll();
-			gui.emptyLoungeChair(loungeSeating.indexOf(nextCust));
-			loungeSeating.set(loungeSeating.indexOf(nextCust), null);
-			return nextCust;
 		}
-		return null;
+ 		return null;
 	}
 
 	// Add more methods as needed
+
+	private int calcPos(int pos){
+    	if (pos < queueLength -1) {
+			pos += 1;
+		} else {
+			pos = 0;
+		}
+		return pos;
+	}
 }
 
 
