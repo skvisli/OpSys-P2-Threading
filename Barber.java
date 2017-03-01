@@ -35,24 +35,23 @@ public class Barber implements Runnable {
 		// Incomplete
 		gui.println("Running " + threadName);
 		running = true;
-		try {
-			thread.sleep(5000);
 			while(true){
-				if (!queue.isEmpty()){
-					gui.fillBarberChair(pos, queue.next());
-					gui.println(threadName + " is cutting");
-					thread.sleep(Globals.barberWork);
-					gui.emptyBarberChair(pos);
-					gui.barberIsSleeping(pos);
-					thread.sleep(Globals.barberSleep);
-					gui.barberIsAwake(pos);
-				}else{
-					//wait();
+				Customer nextCust = queue.next(threadName);
+				System.out.println(threadName + " is running");
+				if (nextCust != null){
+					try{
+						gui.fillBarberChair(pos, nextCust);
+						gui.println(threadName + " is cutting");
+						thread.sleep(Globals.barberWork);
+						gui.emptyBarberChair(pos);
+						gui.barberIsSleeping(pos);
+						thread.sleep(Globals.barberSleep);
+						gui.barberIsAwake(pos);
+					} catch (InterruptedException e) {
+					e.printStackTrace();
+					}
 				}
 			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 	}
 
 	/**

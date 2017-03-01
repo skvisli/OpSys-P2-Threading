@@ -31,7 +31,6 @@ public class Doorman implements Runnable {
 		try{
 			while(true){
 				queue.add(new Customer());
-				//notifyAll();
 				thread.sleep(Globals.doormanSleep);
 			}
 		}catch (InterruptedException e) {
